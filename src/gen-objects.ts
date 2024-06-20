@@ -1508,7 +1508,8 @@ export function addTextDefinition(
 
 			// D: Transform text options to bodyProperties as thats how we build XML
 			itemOpts._bodyProp = itemOpts._bodyProp || {}
-			itemOpts._bodyProp.autoFit = itemOpts.autoFit || false // DEPRECATED: (3.3.0) If true, shape will collapse to text size (Fit To shape)
+			itemOpts._bodyProp.autoFit =
+				typeof itemOpts.autoFit === 'boolean' ? itemOpts.autoFit : undefined // DEPRECATED: (3.3.0) If true, shape will collapse to text size (Fit To shape)
 			itemOpts._bodyProp.anchor = !itemOpts.placeholder ? TEXT_VALIGN.ctr : null // VALS: [t,ctr,b]
 			itemOpts._bodyProp.vert = itemOpts.vert || null // VALS: [eaVert,horz,mongolianVert,vert,vert270,wordArtVert,wordArtVertRtl]
 			itemOpts._bodyProp.wrap =
@@ -1517,13 +1518,13 @@ export function addTextDefinition(
 				typeof itemOpts.vertOverflow === 'string' &&
 				['clip', 'ellipsis', 'overflow'].includes(itemOpts.vertOverflow)
 					? itemOpts.vertOverflow
-					: 'overflow'
+					: undefined
 
 			itemOpts._bodyProp.horzOverflow =
 				typeof itemOpts.horzOverflow === 'string' &&
 				['clip', 'overflow'].includes(itemOpts.horzOverflow)
 					? itemOpts.horzOverflow
-					: 'overflow'
+					: undefined
 
 			// E: Inset
 			// @deprecated 3.10.0 (`inset` - use `margin`)

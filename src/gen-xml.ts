@@ -1544,13 +1544,6 @@ function genXmlBodyProperties(slideObject: ISlideObject | TableCell): string {
 			? ' wrap="square"'
 			: ' wrap="none"'
 
-		bodyProperties += ` vertOverflow=${
-			slideObject.options._bodyProp.vertOverflow || 'overflow'
-		}`
-		bodyProperties += ` horzOverflow=${
-			slideObject.options._bodyProp.horzOverflow || 'overflow'
-		}`
-
 		// B: Textbox margins [padding]
 		if (
 			slideObject.options._bodyProp.lIns ||
@@ -1573,6 +1566,14 @@ function genXmlBodyProperties(slideObject: ISlideObject | TableCell): string {
 		)
 			bodyProperties += ` bIns="${slideObject.options._bodyProp.bIns}"`
 
+		if (slideObject.options._bodyProp.vertOverflow) {
+			bodyProperties += ` vertOverflow="${slideObject.options._bodyProp.vertOverflow}"`
+		}
+
+		if (slideObject.options._bodyProp.horzOverflow) {
+			bodyProperties += ` horzOverflow="${slideObject.options._bodyProp.horzOverflow}"`
+		}
+
 		// C: Add rtl after margins
 		bodyProperties += ' rtlCol="0"'
 
@@ -1592,7 +1593,7 @@ function genXmlBodyProperties(slideObject: ISlideObject | TableCell): string {
 		 */
 		if (slideObject.options.fit) {
 			// NOTE: Use of '<a:noAutofit/>' instead of '' causes issues in PPT-2013!
-			if (slideObject.options.fit === 'none') bodyProperties += ''
+			if (slideObject.options.fit === 'none') bodyProperties += '<a:noAutofit/>'
 			// NOTE: Shrink does not work automatically - PowerPoint calculates the `fontScale` value dynamically upon resize
 			// else if (slideObject.options.fit === 'shrink') bodyProperties += '<a:normAutofit fontScale="85000" lnSpcReduction="20000"/>' // MS-PPT > Format shape > Text Options: "Shrink text on overflow"
 			else if (slideObject.options.fit === 'shrink')
@@ -1607,9 +1608,13 @@ function genXmlBodyProperties(slideObject: ISlideObject | TableCell): string {
 		 * MS-PPT > Format shape > Text Options: "Resize shape to fit text" [spAutoFit]
 		 * NOTE: Use of '<a:noAutofit/>' in lieu of '' below causes issues in PPT-2013
 		 */
-		bodyProperties += slideObject.options._bodyProp.autoFit
-			? '<a:spAutoFit/>'
-			: ''
+		bodyProperties +=
+			typeof slideObject.options._bodyProp.autoFit === 'boolean' &&
+			!slideObject.options.fit
+				? slideObject.options._bodyProp.autoFit
+					? '<a:spAutoFit/>'
+					: '<a:noAutofit/>'
+				: ''
 
 		// LAST: Close _bodyProp
 		bodyProperties += '</a:bodyPr>'
